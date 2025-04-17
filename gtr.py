@@ -12,9 +12,6 @@
 #	Time designation
 #	/home/xfel/xfelopr/local/anaconda3/bin/python3 -OO /home/xfel/xfelopr/kenichi/gtr/gtr.py /home/xfel/xfelopr/kenichi/gtr/config_XSBT_setting_SINGLE.xlsx /home/xfel/xfelopr/kenichi/gtr/config_XSBT_sig_SINGLE.xlsx 0 2021/10/10+09:00:49 2021/10/10+09:10:49 
 
-
-#	python3 -OO gtr.py config_XSBT_setting_SINGLE.xlsx config_XSBT_sig_SINGLE.xlsx 0
-
 import time
 import threading
 from matplotlib import animation
@@ -175,7 +172,7 @@ class Tesclick(object):
         elif event.button == 3: 
             global x_min
             global x_max
-            global x_min_fix
+            global x_min_fix  
             if x_min_fix==0:
                 x_min_fix = num2date(event.xdata).replace(tzinfo=None)
                 print('right click ---	x_min_fix:	' + str(x_min_fix) )
