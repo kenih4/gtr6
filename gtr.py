@@ -12,6 +12,9 @@
 #	Time designation
 #	/home/xfel/xfelopr/local/anaconda3/bin/python3 -OO /home/xfel/xfelopr/kenichi/gtr/gtr.py /home/xfel/xfelopr/kenichi/gtr/config_XSBT_setting_SINGLE.xlsx /home/xfel/xfelopr/kenichi/gtr/config_XSBT_sig_SINGLE.xlsx 0 2021/10/10+09:00:49 2021/10/10+09:10:49 
 
+
+#	python3 -OO gtr.py config_XSBT_setting_SINGLE.xlsx config_XSBT_sig_SINGLE.xlsx 0
+
 import time
 import threading
 from matplotlib import animation
@@ -41,7 +44,9 @@ import subprocess
 #import winsound
 #import seaborn as sns
 
-plt.rcParams['font.family'] = "mikachan-PB"
+global x_min_fix
+
+plt.rcParams['font.family'] = 'Meiryo' # "mikachan-PB"
 
 
 print("arg len:",len(sys.argv))
@@ -77,7 +82,7 @@ df_sig = pd.read_excel(conf_sig, sheet_name="sig")
 #df_sig = pd.read_html(conf_sig, sheet_name="sig")		#DAME
 #print(df_sig)
 
-res = subprocess.run(["amixer", "sset", "Master", "on"], stdout=subprocess.PIPE)
+# res = subprocess.run(["amixer", "sset", "Master", "on"], stdout=subprocess.PIPE) # Windows 
 #pdb.set_trace()
 
 
@@ -172,7 +177,7 @@ class Tesclick(object):
         elif event.button == 3: 
             global x_min
             global x_max
-            global x_min_fix  
+#            global x_min_fix
             if x_min_fix==0:
                 x_min_fix = num2date(event.xdata).replace(tzinfo=None)
                 print('right click ---	x_min_fix:	' + str(x_min_fix) )
@@ -314,10 +319,10 @@ ax = [] * len(df_sig)
 #fig, (ax) = plt.subplots(nrows=len(df_sig), sharex="row", figsize=(12.0, 100))
 fig, (ax) = plt.subplots(nrows=len(df_sig), sharex="row", figsize=(float(x_size), float(y_size)))
 fig.patch.set_facecolor(str(df_set.loc['bcolor']).replace("1","").strip().splitlines()[0])
-fig.canvas.set_window_title(str(df_set.loc['title']).replace("1","").strip())
+# fig.canvas.set_window_title(str(df_set.loc['title']).replace("1","").strip()) # Windows
 
 #fig.canvas.manager.window.move(int(x_position), 0)
-fig.canvas.manager.window.move(int(x_position), int(y_position))
+#fig.canvas.manager.window.move(int(x_position), int(y_position)) # Windows
 #fig.canvas.set_window_position(0,0)
 #fig.window.SetPosition((0,0))
 
@@ -415,7 +420,7 @@ def _update():
 			    s.url =  'http://websvr02.spring8.or.jp/cgi-bin/xdaq/plot_multi.cgi?&Command=data&LeftSignals=' + str(df_sig.loc[n]['sname']) + '&LeftMax=&LeftMin=&LeftLogy=&RightSignals=&RightMax=&RightMin=&RightLogy=&XSignals=&XMax=&XMin=&XLog=&XY=Trend&BeginTime=' + sta.strftime("%Y/%m/%d+%H:%M:%S") + '&EndTime=' + sto.strftime("%Y/%m/%d+%H:%M:%S") + '&Selection=Time'
 			    s.time, s.val =  get_exp_sync(s.url)
 			else:
-			    s.url =  'http://xfweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_sync_plot.py?daq_type=1&lsig=' + str(df_sig.loc[n]['sid']) + '&Selection=Time&begin_bt=' + sta.strftime("%Y/%m/%d+%H:%M:%S") + '&end_bt=' + sto.strftime("%Y/%m/%d+%H:%M:%S") + '&filter=time&sampling=-1&repetition_rate=30&remainder=0&data_order=asc&Command=text' if 'acc_SCSS' in df_sig.loc[n]['srv'] else 'http://srweb-csr-01.sp8.cntl.local/cgi-bin/MDAQ/mdaq_sync_plot.py?lsig=' + str(df_sig.loc[n]['sid']) + '&Selection=Time&begin_bt=' + sta.strftime("%Y/%m/%d+%H:%M:%S") + '&end_bt=' + sto.strftime("%Y/%m/%d+%H:%M:%S") + '&filter=time&sampling=-1&repetition_rate=30&remainder=0&data_order=asc&Command=text'	
+			    s.url =  'http://xfweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_sync_plot.py?daq_type=1&lsig=' + str(df_sig.loc[n]['sid']) + '&Selection=Time&begin_bt=' + sta.strftime("%Y/%m/%d+%H:%M:%S") + '&end_bt=' + sto.strftime("%Y/%m/%d+%H:%M:%S") + '&filter=time&sampling=-1&repetition_rate=30&remainder=0&data_order=asc&Command=text' if 'acc_SCSS' in df_sig.loc[n]['srv'] else 'http://srweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_sync_plot.py?lsig=' + str(df_sig.loc[n]['sid']) + '&Selection=Time&begin_bt=' + sta.strftime("%Y/%m/%d+%H:%M:%S") + '&end_bt=' + sto.strftime("%Y/%m/%d+%H:%M:%S") + '&filter=time&sampling=-1&repetition_rate=30&remainder=0&data_order=asc&Command=text'	
 			    s.time, s.val =  get_acc_sync(s.url)
 
 #			print(s.url)
@@ -855,7 +860,7 @@ def _redraw(_):
 #			ax[n].legend(loc='upper left', bbox_to_anchor=(0.12*(df_sig.loc[n]['ax']-1), 0, 0.35, 0.3))				MOTO
 #			ax[n].xaxis.set_major_formatter(DateFormatter('%d %H:%M'))
 #			ax[n].xaxis.set_major_formatter(DateFormatter('%d %H:%M'))
-			ax[n].xaxis.set_major_formatter(DateFormatter('%-m/%-d(%-H:%-M)'))
+			ax[n].xaxis.set_major_formatter(DateFormatter('%m/%d %H:%M')) # LinuxではOK、WindowsではNG	DateFormatter('%-m/%-d(%-H:%-M)'))
 #			ax[n].xaxis.set_major_formatter(DateFormatter('%H:%M:%S'))
 			ax[n].tick_params(axis='x', labelsize=14)
 
